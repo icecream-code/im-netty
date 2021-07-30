@@ -1,0 +1,17 @@
+# 服务配置
+server:
+  port: 8081
+  servlet:
+    context-path: /im
+
+spring:
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: true
+  servlet:
+    multipart:
+      max-file-size: 20MB

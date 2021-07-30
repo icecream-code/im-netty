@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!--属性定义-->
+    <springProperty scope="context" name="log.path" source="logging.custom.path" defaultValue="/home/log" />
+    <property name="log.max_history" value="15" />
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n" />
+
+    <!--控制台输出-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--文件输出 INFO-->
+    <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/info/info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <MaxHistory>${log.max_history}</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--文件输出 ERROR-->
+    <appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/error/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--<root level="debug">-->
+        <!--<appender-ref ref="console" />-->
+    <!--</root>-->
+
+    <springProfile name="dev">
+        <include resource="org/springframework/boot/logging/logback/base.xml" />
+    </springProfile>
+
+    <!--测试环境-->
+    <springProfile name="test">
+        <root level="info">
+            <appender-ref ref="file_info" />
+            <appender-ref ref="file_error" />
+        </root>
+    </springProfile>
+
+    <!--生产环境-->
+    <springProfile name="prod">
+        <root level="info">
+            <appender-ref ref="console" />
+            <appender-ref ref="file_info" />
+            <appender-ref ref="file_error" />
+        </root>
+    </springProfile>
+</configuration>
